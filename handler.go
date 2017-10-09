@@ -35,21 +35,23 @@ func handleClient(conn net.Conn) {
 func GetResponseForMode() (response []byte) {
 	switch defaultMode {
 	case Normal:
+		//TODO : How to handle error
 		cpuLoad, _ := cpu.Percent(0, false)
 		v, _ := mem.VirtualMemory()
-
+		averageCpuLoad := cpuLoad[0]
+		usedRam := v.UsedPercent
 		// If any resource is important and utilized 100% then everything else is not important
-		if cpuLoad[0] > cpuThresholdValue && cpuThresholdValue > 0 || (v.UsedPercent > ramThresholdValue && ramThresholdValue > 0) {
+		if averageCpuLoad > cpuThresholdValue && cpuThresholdValue > 0 || (usedRam > ramThresholdValue && ramThresholdValue > 0) {
 			response = []byte("0%\n")
 		}
 		utilization := 0.0
 		divider := 0.0
-		utilization = utilization + cpuLoad[0]*cpuImportance
+		utilization = utilization + averageCpuLoad*cpuImportance
 		if cpuImportance > 0 {
 			divider++
 		}
 
-		utilization = utilization + v.UsedPercent*ramImportance
+		utilization = utilization + usedRam*ramImportance
 		if ramImportance > 0 {
 			divider++
 		}
