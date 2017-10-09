@@ -1,10 +1,11 @@
 package main
 
 import (
-	l4g "github.com/alecthomas/log4go"
+	"log"
 )
 
 func main() {
+	InitConfig()
 	srv := InitServer()
 	// accept connection on port
 
@@ -12,7 +13,7 @@ func main() {
 	for {
 		conn, err := srv.server.Accept()
 		if err != nil {
-			l4g.Error(err)
+			log.Println(err)
 		}
 		go handleClient(conn)
 	}

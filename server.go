@@ -1,7 +1,7 @@
 package main
 
 import (
-	l4g "github.com/alecthomas/log4go"
+	"log"
 	"net"
 )
 
@@ -17,7 +17,7 @@ func InitServer() *Server {
 	srv := &Server{}
 	listner, err := net.Listen("tcp", PORT)
 	if err != nil {
-		l4g.Crash(err)
+		log.Fatal(err)
 	}
 	srv.server = listner
 	return srv
