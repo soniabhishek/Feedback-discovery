@@ -18,3 +18,5 @@ func main() {
 		go handleClient(conn)
 	}
 }
+
+//https://gogs.io/docs/installation/run_as_windows_service

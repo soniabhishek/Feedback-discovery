@@ -1,10 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/mem"
 	"net"
+	"strconv"
 )
 
 type Mode uint8
@@ -55,6 +57,21 @@ func GetResponseForMode() (response []byte) {
 		if ramImportance > 0 {
 			divider++
 		}
+
+		for _, tcpService := range GlobalConfig.TCPService {
+			sessionOccupied := GetSessionUtilized(tcpService.IPAddress.Value, tcpService.Port.Value, tcpService.MaxConnections.ToInt())
+
+			utilization = utilization + sessionOccupied*tcpService.ImportanceFactor.ToFloat()
+			if tcpService.ImportanceFactor.ToFloat() > 0 {
+				divider++
+			}
+
+			if sessionOccupied > 99 && tcpService.ImportanceFactor.ToFloat() == 1 {
+				response = []byte("0%\n")
+				break
+			}
+		}
+
 		utilization = utilization / divider
 
 		if utilization < 0 {
@@ -79,4 +96,24 @@ func GetResponseForMode() (response []byte) {
 		response = []byte("error\n")
 	}
 	return
+}
+
+func GetSessionUtilized(IPAddress, servicePort string, maxNumberOfSessionsPerService int) (result float64) {
+	numberOfEstablishedConnections := getNumberOfLocalEstablishedConnections(IPAddress, servicePort)
+	if numberOfEstablishedConnections > 0 && maxNumberOfSessionsPerService > 0 {
+		result = float64(maxNumberOfSessionsPerService) / float64(numberOfEstablishedConnections)
+	}
+	return
+}
+
+func getNumberOfLocalEstablishedConnections(ipAddress string, port string) int {
+	if ipAddress == "*" {
+		ipAddress = ""
+	}
+	result := runcmd("netstat -nlt | grep -w " + ipAddress + ":" + port + "  | grep ESTABLISHED | wc -l")
+	count, err := strconv.Atoi(string(bytes.TrimSpace(result)))
+	if err != nil {
+		//Todo : handle error
+	}
+	return count
 }

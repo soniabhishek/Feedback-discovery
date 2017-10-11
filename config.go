@@ -14,6 +14,26 @@ var GlobalConfig *XMLConfig
 type ValueAttr struct {
 	Value string `xml:"value,attr"`
 }
+
+func (va ValueAttr) ToInt() int {
+	val, err := strconv.Atoi(va.Value)
+	if err != nil {
+		panic(err)
+	}
+	return val
+}
+
+func (va ValueAttr) ToFloat() float64 {
+	val, err := strconv.ParseFloat(va.Value, 64)
+	if err != nil {
+		panic(err)
+	}
+	return val
+}
+func (va ValueAttr) ToString() string {
+	return va.Value
+}
+
 type TCPService struct {
 	Name             ValueAttr
 	IPAddress        ValueAttr
@@ -36,7 +56,7 @@ type XMLConfig struct {
 	XMLName                           xml.Name `xml:"xml"`
 	Cpu                               CPU
 	Ram                               RAM
-	TCPService                        TCPService
+	TCPService                        []TCPService
 	ReadAgentStatusFromConfig         ValueAttr
 	ReadAgentStatusFromConfigInterval ValueAttr
 	AgentStatus                       ValueAttr
