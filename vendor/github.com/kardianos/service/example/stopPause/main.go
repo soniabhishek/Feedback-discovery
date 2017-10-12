@@ -1,8 +1,16 @@
+// Copyright 2015 Daniel Theophanes.
+// Use of this source code is governed by a zlib-style
+// license that can be found in the LICENSE file.
+
+// simple does nothing except block while running the service.
 package main
 
 import (
-	"github.com/kardianos/service"
 	"log"
+	"os"
+	"time"
+
+	"github.com/kardianos/service"
 )
 
 var logger service.Logger
@@ -16,36 +24,33 @@ func (p *program) Start(s service.Service) error {
 }
 func (p *program) run() {
 	// Do work here
-	InitConfig()
-	srv := InitServer()
-	// accept connection on port
-
-	// run loop forever (or until ctrl-c)
-	for {
-		conn, err := srv.server.Accept()
-		if err != nil {
-			log.Println(err)
-		}
-		go handleClient(conn)
-	}
 }
-
 func (p *program) Stop(s service.Service) error {
 	// Stop should not block. Return with a few seconds.
+	<-time.After(time.Second * 13)
 	return nil
 }
 
 func main() {
 	svcConfig := &service.Config{
-		Name:        "FeedBackService",
-		DisplayName: "TCP Feedback Service",
-		Description: "This is a go service to provide system stats",
+		Name:        "GoServiceExampleStopPause",
+		DisplayName: "Go Service Example: Stop Pause",
+		Description: "This is an example Go service that pauses on stop.",
 	}
+
 	prg := &program{}
 	s, err := service.New(prg, svcConfig)
 	if err != nil {
 		log.Fatal(err)
 	}
+	if len(os.Args) > 1 {
+		err = service.Control(s, os.Args[1])
+		if err != nil {
+			log.Fatal(err)
+		}
+		return
+	}
+
 	logger, err = s.Logger(nil)
 	if err != nil {
 		log.Fatal(err)
@@ -55,5 +60,3 @@ func main() {
 		logger.Error(err)
 	}
 }
-
-//http://decouvric.cluster013.ovh.net/golang/thirdparty/divers/creer-un-service-golang-avec-kardianos.html
