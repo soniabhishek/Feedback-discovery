@@ -9,17 +9,14 @@ import (
 	"strconv"
 )
 
-type Mode uint8
-
 const (
-	Normal Mode = iota
-	Halt
-	Drain
-	Down
+	Normal = "Normal"
+	Halt   = "Halt"
+	Drain  = "Drain"
+	Down   = "Down"
 )
 
 const (
-	defaultMode       = Normal
 	cpuThresholdValue = 100
 	ramThresholdValue = 100
 	cpuImportance     = 1
@@ -35,11 +32,16 @@ func handleClient(conn net.Conn) {
 }
 
 func GetResponseForMode() (response []byte) {
-	switch defaultMode {
+	switch GlobalConfig.AgentStatus.Value {
 	case Normal:
-		//TODO : How to handle error
-		cpuLoad, _ := cpu.Percent(0, false)
-		v, _ := mem.VirtualMemory()
+		cpuLoad, err := cpu.Percent(0, false)
+		if err != nil {
+			return []byte("0%\n")
+		}
+		v, err := mem.VirtualMemory()
+		if err != nil {
+			return []byte("0%\n")
+		}
 		averageCpuLoad := cpuLoad[0]
 		usedRam := v.UsedPercent
 		// If any resource is important and utilized 100% then everything else is not important
@@ -113,7 +115,7 @@ func getNumberOfLocalEstablishedConnections(ipAddress string, port string) int {
 	result := runcmd("netstat -nlt | grep -w " + ipAddress + ":" + port + "  | grep ESTABLISHED | wc -l")
 	count, err := strconv.Atoi(string(bytes.TrimSpace(result)))
 	if err != nil {
-		//Todo : handle error
+		return 0
 	}
 	return count
 }

@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/xml"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"strconv"
@@ -66,36 +65,30 @@ type XMLConfig struct {
 func readConfig() {
 	xmlFile, err := os.Open("config.xml")
 	if err != nil {
-		fmt.Println("Error opening file:", err)
-		return
+		panic(err)
 	}
 	defer xmlFile.Close()
 	content, err := ioutil.ReadAll(xmlFile)
 	if err != nil {
-		fmt.Println("Error reading file:", err)
-		return
+		panic(err)
 	}
 
 	err = xml.Unmarshal(content, &GlobalConfig)
 	if err != nil {
-		fmt.Println("Error xmling file:", err)
-		return
+		panic(err)
+	}
+	if GlobalConfig.ReadAgentStatusFromConfig.Value == "true" {
+		interval, err := strconv.Atoi(GlobalConfig.ReadAgentStatusFromConfigInterval.Value)
+		if err != nil {
+			panic(err)
+		}
+		go func() {
+			time.Sleep(time.Second * time.Duration(interval))
+			readConfig()
+		}()
 	}
 }
 
 func InitConfig() {
 	readConfig()
-	if GlobalConfig.ReadAgentStatusFromConfig.Value == "true" {
-		interval, err := strconv.Atoi(GlobalConfig.ReadAgentStatusFromConfigInterval.Value)
-		if err != nil {
-			fmt.Println("Error format error:", err)
-			return
-		}
-		tick := time.Tick(time.Duration(interval) * time.Second)
-		go func() {
-			for _ = range tick {
-				readConfig()
-			}
-		}()
-	}
 }
