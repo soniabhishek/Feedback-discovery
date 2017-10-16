@@ -78,12 +78,8 @@ func readConfig() {
 		panic(err)
 	}
 	if GlobalConfig.ReadAgentStatusFromConfig.Value == "true" {
-		interval, err := strconv.Atoi(GlobalConfig.ReadAgentStatusFromConfigInterval.Value)
-		if err != nil {
-			panic(err)
-		}
 		go func() {
-			time.Sleep(time.Second * time.Duration(interval))
+			time.Sleep(time.Second * time.Duration(GlobalConfig.ReadAgentStatusFromConfigInterval.ToInt()))
 			readConfig()
 		}()
 	}
@@ -91,4 +87,8 @@ func readConfig() {
 
 func InitConfig() {
 	readConfig()
+	go func() {
+		time.Sleep(time.Second * time.Duration(GlobalConfig.Interval.ToInt()))
+		initialRun = false
+	}()
 }

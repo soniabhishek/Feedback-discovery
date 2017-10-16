@@ -16,13 +16,12 @@ const (
 	Down   = "Down"
 )
 
+var (
+	initialRun = true
+)
+
 const (
-	cpuThresholdValue = 100
-	ramThresholdValue = 100
-	cpuImportance     = 1
-	ramImportance     = 0
-	returnIdle        = true
-	initialRun        = true
+	returnIdle = true
 )
 
 func handleClient(conn net.Conn) {
@@ -32,6 +31,11 @@ func handleClient(conn net.Conn) {
 }
 
 func GetResponseForMode() (response []byte) {
+	ramThresholdValue := GlobalConfig.Ram.ThresholdValue.ToFloat()
+	cpuThresholdValue := GlobalConfig.Cpu.ThresholdValue.ToFloat()
+	cpuImportance := GlobalConfig.Cpu.ImportanceFactor.ToFloat()
+	ramImportance := GlobalConfig.Ram.ImportanceFactor.ToFloat()
+
 	switch GlobalConfig.AgentStatus.Value {
 	case Normal:
 		cpuLoad, err := cpu.Percent(0, false)
