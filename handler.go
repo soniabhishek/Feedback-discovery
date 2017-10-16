@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/mem"
+	"math"
 	"net"
 	"strconv"
 )
@@ -87,9 +88,9 @@ func GetResponseForMode() (response []byte) {
 			utilization = 100
 		}
 		if returnIdle {
-			response = []byte(fmt.Sprintf("%v\n", 100-utilization))
+			response = []byte(fmt.Sprintf("%v\n", math.Ceil(100-utilization)))
 		} else {
-			response = []byte(fmt.Sprintf("%v\n", utilization))
+			response = []byte(fmt.Sprintf("%v\n", math.Ceil(utilization)))
 		}
 		if initialRun {
 			response = append([]byte("up ready "), response...)
