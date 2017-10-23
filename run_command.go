@@ -2,10 +2,11 @@ package main
 
 import (
 	"os/exec"
+	"log"
 	"runtime"
 )
 
-func runcmd(command string) []byte {
+func runcmd(command string) (res []byte) {
 	var shell, flag string
 	if runtime.GOOS == "windows" {
 		shell = "cmd"
@@ -15,10 +16,11 @@ func runcmd(command string) []byte {
 		flag = "-c"
 	}
 
-	out, err := exec.Command(shell, flag, command).Output()
+	res, err := exec.Command(shell, flag, command).Output()
 	if err != nil {
-		panic(err)
+	log.Println("err ", err) 
+		return
 	}
 
-	return out
+	return
 }

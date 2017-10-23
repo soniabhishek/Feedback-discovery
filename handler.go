@@ -1,13 +1,12 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/mem"
 	"math"
 	"net"
-	"strconv"
+	"strings"
 )
 
 const (
@@ -117,10 +116,10 @@ func getNumberOfLocalEstablishedConnections(ipAddress string, port string) int {
 	if ipAddress == "*" {
 		ipAddress = ""
 	}
-	result := runcmd("netstat -nlt | grep -w " + ipAddress + ":" + port + "  | grep ESTABLISHED | wc -l")
-	count, err := strconv.Atoi(string(bytes.TrimSpace(result)))
-	if err != nil {
-		return 0
+	result := runcmd("netstat -nt | findstr " + ipAddress + ":" + port + "  | findstr ESTABLISHED ")
+	count := len(strings.Split(string(result), "\n"))
+	if count == 0 {
+		return count
 	}
-	return count
+	return count - 1
 }
