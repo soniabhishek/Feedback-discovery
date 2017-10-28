@@ -3,10 +3,10 @@ package main
 import (
 	"encoding/xml"
 	"io/ioutil"
+	"log"
 	"os"
 	"strconv"
 	"time"
-	"log"
 )
 
 var GlobalConfig *XMLConfig
@@ -64,7 +64,7 @@ type XMLConfig struct {
 }
 
 func readConfig() {
-	xmlFile, err := os.Open("G:/assingment/src/Feedback-discovery/config.xml")
+	xmlFile, err := os.Open("config.xml")
 	if err != nil {
 		panic(err)
 	}
@@ -87,9 +87,9 @@ func readConfig() {
 }
 
 func InitConfig() {
-	f, err := os.OpenFile("G:/assingment/src/Feedback-discovery/testlogfile", os.O_RDWR | os.O_CREATE | os.O_APPEND, 0666)
+	f, err := os.OpenFile("testlogfile", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
-	    log.Fatalf("error opening file: %v", err)
+		log.Fatalf("error opening file: %v", err)
 	}
 
 	log.SetOutput(f)
