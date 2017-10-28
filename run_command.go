@@ -18,7 +18,6 @@ func runcmd(command string) (res string) {
 		shell = "/bin/sh"
 		flag = "-c"
 	}
-
 	res, err := run(10, shell, flag, command)
 	if err != nil {
 		log.Println(err)

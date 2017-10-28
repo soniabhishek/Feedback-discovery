@@ -116,8 +116,8 @@ func getNumberOfLocalEstablishedConnections(ipAddress string, port string) int {
 	if ipAddress == "*" {
 		ipAddress = ""
 	}
-	result := runcmd("netstat -nt | grep -w " + ipAddress + ":" + port + "  | grep -w ESTABLISHED ")
-	count := len(strings.Split(string(result), "\n"))
+	result := runcmd("netstat -nt | findstr " + ipAddress + ":" + port + "  | findstr ESTABLISHED ")
+	count := len(strings.Split(result, "\n"))
 	if count == 0 {
 		return count
 	}
