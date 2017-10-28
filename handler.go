@@ -87,9 +87,9 @@ func GetResponseForMode() (response []byte) {
 			utilization = 100
 		}
 		if returnIdle {
-			response = []byte(fmt.Sprintf("%v\n", math.Ceil(100-utilization)))
+			response = []byte(fmt.Sprintf("%v%%\n", math.Ceil(100-utilization)))
 		} else {
-			response = []byte(fmt.Sprintf("%v\n", math.Ceil(utilization)))
+			response = []byte(fmt.Sprintf("%v%%\n", math.Ceil(utilization)))
 		}
 		if initialRun {
 			response = append([]byte("up ready "), response...)
@@ -117,7 +117,7 @@ func getNumberOfLocalEstablishedConnections(ipAddress string, port string) int {
 		ipAddress = ""
 	}
 	result := runcmd("netstat -nt | findstr " + ipAddress + ":" + port + "  | findstr ESTABLISHED ")
-	count := len(strings.Split(string(result), "\n"))
+	count := len(strings.Split(result, "\n"))
 	if count == 0 {
 		return count
 	}

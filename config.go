@@ -3,10 +3,10 @@ package main
 import (
 	"encoding/xml"
 	"io/ioutil"
+	"log"
 	"os"
 	"strconv"
 	"time"
-	"log"
 )
 
 var GlobalConfig *XMLConfig
